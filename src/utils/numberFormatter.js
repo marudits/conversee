@@ -23,3 +23,16 @@ export function numberWithComma(value) {
 
     return unit ? `${localeString} ${unit}` : localeString;
 }
+
+export function cutoff(value, precision = 2){
+    value = String(value);
+    let pattern = `(^-?\\d+\\.\\d{1,${precision}})`;
+    if (!precision) {
+        pattern = `(^-?\\d+)`;
+    }
+
+    const reg = new RegExp(pattern);
+    const matches = reg.exec(value);
+
+    return matches ? matches[1] : value;
+}

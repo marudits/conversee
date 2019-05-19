@@ -8,10 +8,10 @@
                 el-col(:xs="6" :sm="4")
                     h2.currency_code {{ currency_code }} 
                 el-col(:xs="18" :sm="20")
-                    h2.total {{ total | numberWithComma }}
+                    h2.total {{ total | cutoff | numberWithComma }}
             el-row(v-if="rate && rate_updated_at")
                 el-col
-                    p.rate Rate: {{ rate | numberWithComma }}&ast;
+                    p.rate Rate: {{ rate | cutoff | numberWithComma }}&ast;
                     p.rate-updated-at &ast;Updated at: {{ rate_updated_at }}
 </template>
 
@@ -21,15 +21,14 @@
 import { CONSTANTS } from '../shared/constants';
 
 // utils
-import { numberWithComma } from '../utils/numberFormatter';
+import { cutoff, numberWithComma } from '../utils/numberFormatter';
 
 export default {
     name: 'CurrencyInfo',
-    props: ['amount', 'base_currency', 'currency_code'],
+    props: ['amount', 'base_currency', 'currency_code', 'rate'],
     data: () => {
         return {
             currency_name: null,
-            rate: 0,
             rate_updated_at: null,
             total: 1
         }
@@ -40,8 +39,11 @@ export default {
         }
     },
     filters: {
+        cutoff(value, precision){
+            return cutoff(value, precision);
+        },
         numberWithComma(num){
-            return numberWithComma(num)
+            return numberWithComma(num);
         }
     },
     mounted(){
@@ -59,9 +61,10 @@ export default {
     },
     watch: {
         amountAndRate(){
-            this.rate = 10954;
-            this.rate_updated_at = new Date().toLocaleString();
-            this.updateTotal();
+            if(this.rate){
+                this.rate_updated_at = new Date().toLocaleString();
+                this.updateTotal();
+            }
         }
     }
 }

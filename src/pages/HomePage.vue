@@ -14,7 +14,7 @@
                                     )
                     el-col(:xs="24" :sm="8")
                         el-form-item
-                            el-input-number.amount(v-model="form.amount" placeholder="Type amount")
+                            el-input-number.amount(v-model="form.amount" placeholder="Type amount" :min="0")
                     el-col(:xs="24" :sm="8")
                         el-select.selected-currencies(v-model="form.selected_currencies" multiple collapse-tags placeholder="Select Quote Currencies")
                             el-option(
@@ -26,7 +26,7 @@
         .content
             el-row(:gutter="12")
                 el-col.currency-info(v-if="list.selected_currencies.length > 0" :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
-                    CurrencyInfoCard(:amount="form.amount" :base_currency="form.base_currency" :currency_code="item.currency_code")
+                    CurrencyInfoCard(:amount="form.amount" :base_currency="form.base_currency" :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0")
                 el-col.currency-info.no-data(v-if="list.selected_currencies.length == 0")
                     h4 
                         i.el-icon-search 
@@ -36,6 +36,9 @@
 <script>
 // components
 import CurrencyInfoCard from '../components/CurrencyInfoCard.vue';
+
+// services
+import { getExchangeRates } from '../services/exchangeRate';
 
 // shared
 import { CONSTANTS } from '../shared/constants';
@@ -48,6 +51,9 @@ export default {
     computed: {
         amount(){
             return this.form.amount;
+        },
+        baseCurrency(){
+            return this.form.base_currency;
         },
         selectedCurrencies(){
             return this.form.selected_currencies;
@@ -62,7 +68,7 @@ export default {
             },
             list: {
                 currencies: CONSTANTS.CURRENCIES.LIST,
-                rates: [],
+                rates: {},
                 selected_currencies: [],
             }
         }
@@ -71,17 +77,34 @@ export default {
     },
     methods: {
         updateRate(){
-
+            getExchangeRates(this.form.base_currency, this.form.selected_currencies.join(','))
+                .then(res => {
+                    this.list.rates = res.body.rates;
+                })
+                .catch(err => {
+                    this.showMessage('Failed on udpating rate info. ' + (err.error || ''), 'error');
+                })
+        },
+        showMessage(message = 'Lorem ipsum dolor sit amet', type = 'message',){
+            this.$message({ type, message })
         }
     },
     watch: {
         amount(){
+            if(this.form.base_currency && this.form.selected_currencies.length > 0){
+                this.updateRate();
+            }
+        },
+        baseCurrency(){
             this.updateRate();
         },
         selectedCurrencies(){
             this.list.selected_currencies = [];
             for(let item of this.form.selected_currencies){
                 this.list.selected_currencies.push({ currency_code: item, base_currency: this.form.base_currency, rate: 0 });
+            }
+            if(this.list.selected_currencies.length > 0){
+                this.updateRate();
             }
         }
     }

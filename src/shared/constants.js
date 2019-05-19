@@ -1,4 +1,10 @@
 export const CONSTANTS = {
+    API: {
+        EXCHANGE_RATES: {
+            ROOT: `https://api.exchangeratesapi.io`,
+            QUOTE: `/latest`
+        }
+    },
     CURRENCIES: {
         DEFAULT_BASE: 'USD',
         LIST: [
@@ -13,5 +19,5 @@ export const CONSTANTS = {
             { code: 'MYR', name: 'Malaysian Ringgit' },
             { code: 'SGD', name: 'Singapore Dollar' }
         ]
-    }
+    } 
 }
