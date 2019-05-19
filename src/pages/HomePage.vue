@@ -26,7 +26,11 @@
         .content
             el-row(:gutter="12")
                 el-col.currency-info(v-if="list.selected_currencies.length > 0" :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
-                    CurrencyInfoCard(:amount="form.amount" :base_currency="form.base_currency" :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0")
+                    CurrencyInfoCard(
+                        :amount="form.amount" :base_currency="form.base_currency" 
+                        :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0"
+                        @dismiss="handleAction('remove-quote-currency', item.currency_code)"
+                        )
                 el-col.currency-info.no-data(v-if="list.selected_currencies.length == 0")
                     h4 
                         i.el-icon-search 
@@ -76,6 +80,19 @@ export default {
     mounted(){
     },
     methods: {
+        handleAction(type, param){
+            switch(type){
+                case 'remove-quote-currency':
+                    let removedIndex = this.form.selected_currencies.indexOf(param);
+                    this.form.selected_currencies.splice(removedIndex, 1);
+                    break;
+                default:
+                    break;
+            }
+        },
+        showMessage(message = 'Lorem ipsum dolor sit amet', type = 'message',){
+            this.$message({ type, message })
+        },
         updateRate(){
             getExchangeRates(this.form.base_currency, this.form.selected_currencies.join(','))
                 .then(res => {
@@ -85,9 +102,6 @@ export default {
                     this.showMessage('Failed on udpating rate info. ' + (err.error || ''), 'error');
                 })
         },
-        showMessage(message = 'Lorem ipsum dolor sit amet', type = 'message',){
-            this.$message({ type, message })
-        }
     },
     watch: {
         amount(){
