@@ -2,21 +2,27 @@
 <template lang="pug">
   el-container#app
     el-header
-      h1 Conversee
+      Header
     el-main
       HomePage
     el-footer
-      p Copyright &copy; 2019 by
-        a(href="mailto:marudits@gmail.com") marudits
+      Footer
 </template>
 
 <script>
-import HomePage from './pages/HomePage.vue'
+// components
+import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
+
+// pages
+import HomePage from './pages/HomePage.vue';
 
 export default {
   name: 'app',
   components: {
-    HomePage
+    HomePage,
+    Header,
+    Footer
   }
 }
 </script>
