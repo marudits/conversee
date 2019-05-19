@@ -1,11 +1,56 @@
 <template lang="pug">
     .homepage
-        p Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        .header
+            el-form.form-conversion(ref="form-conversion" :model="form" :inline="true")
+                el-row(:gutter="12")
+                    el-col(:xs="24" :sm="6")
+                        el-form-item
+                            el-select(v-model="form.base_currency" placeholder="Select Base Currency")
+                                el-option(
+                                    v-for="(currency, index) in list.currencies"
+                                    :key="index"
+                                    :label="`${currency.code} - ${currency.name}`"
+                                    :value="currency.code"
+                                    )
+                    el-col(:xs="24" :sm="6")
+                        el-form-item
+                            el-input(v-model="form.amount" placeholder="Type amount")
+
+        .content
+            .currency-info(v-for="(item, index) in list.selected_currencies")
+                CurrencyInfoCard(:info="item")
 </template>
 
 <script>
+// components
+import CurrencyInfoCard from '../components/CurrencyInfoCard.vue';
+
+// shared
+import { CONSTANTS } from '../shared/constants';
+
 export default {
-    name: 'HomePage'
+    name: 'HomePage',
+    components: {
+        CurrencyInfoCard
+    },
+    data: () => {
+        return {
+            form: {
+                base_currency: CONSTANTS.CURRENCIES.DEFAULT_BASE,
+                amount: 1
+            },
+            list: {
+                currencies: CONSTANTS.CURRENCIES.LIST,
+                selected_currencies: [],
+            }
+        }
+    },
+    mounted(){
+        this.list.selected_currencies = [
+            { currency_code: 'IDR', base_currency: this.form.base_currency },
+            { currency_code: 'SGD', base_currency: this.form.base_currency }
+        ]
+    }
 }
 </script>
 
@@ -14,6 +59,15 @@ export default {
         p
             text-align justify 
             text-indent 2rem
+
+        .form
+            &-conversion
+                .el-form-item
+                    width 100%
+                    &__content
+                        width 100%
+                        .el-input-number
+                            width 100%
 </style>
 
 
