@@ -1,24 +1,22 @@
 <template lang="pug">
     .homepage
         .header
-            el-form.form-conversion(ref="form-conversion" :model="form" :inline="true")
-                el-row(:gutter="12")
-                    el-col(:xs="24" :sm="6")
-                        el-form-item
-                            el-select(v-model="form.base_currency" placeholder="Select Base Currency")
-                                el-option(
-                                    v-for="(currency, index) in list.currencies"
-                                    :key="index"
-                                    :label="`${currency.code} - ${currency.name}`"
-                                    :value="currency.code"
-                                    )
-                    el-col(:xs="24" :sm="6")
-                        el-form-item
-                            el-input(v-model="form.amount" placeholder="Type amount")
+            el-form.form-conversion(ref="form-conversion" :model="form")
+                el-form-item
+                    el-select.base-currency(v-model="form.base_currency" placeholder="Select Base Currency")
+                        el-option(
+                            v-for="(currency, index) in list.currencies"
+                            :key="index"
+                            :label="`${currency.code} - ${currency.name}`"
+                            :value="currency.code"
+                            )
+                el-form-item
+                    el-input-number.amount(v-model="form.amount" placeholder="Type amount")
 
         .content
-            .currency-info(v-for="(item, index) in list.selected_currencies")
-                CurrencyInfoCard(:info="item")
+            el-row(:gutter="12")
+                el-col.currency-info(:xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
+                    CurrencyInfoCard(:amount="form.amount" :base_currency="form.base_currency" :currency_code="item.currency_code")
 </template>
 
 <script>
@@ -37,7 +35,7 @@ export default {
         return {
             form: {
                 base_currency: CONSTANTS.CURRENCIES.DEFAULT_BASE,
-                amount: 1
+                amount: 0,
             },
             list: {
                 currencies: CONSTANTS.CURRENCIES.LIST,
@@ -48,7 +46,11 @@ export default {
     mounted(){
         this.list.selected_currencies = [
             { currency_code: 'IDR', base_currency: this.form.base_currency },
-            { currency_code: 'SGD', base_currency: this.form.base_currency }
+            { currency_code: 'INR', base_currency: this.form.base_currency },
+            { currency_code: 'KRW', base_currency: this.form.base_currency },
+            { currency_code: 'SGD', base_currency: this.form.base_currency },
+            { currency_code: 'CAD', base_currency: this.form.base_currency },
+            { currency_code: 'MYR', base_currency: this.form.base_currency },
         ]
     }
 }
@@ -56,18 +58,16 @@ export default {
 
 <style lang="stylus" scoped>
     .homepage
-        p
-            text-align justify 
-            text-indent 2rem
-
-        .form
-            &-conversion
-                .el-form-item
-                    width 100%
-                    &__content
+        .header
+            .form-conversion
+                .el-select
+                    &.base-currency
+                        max-width 300px
                         width 100%
-                        .el-input-number
-                            width 100%
+                .el-input-number
+                    &.amount
+                        max-width 300px
+                        width 100%
 </style>
 
 
