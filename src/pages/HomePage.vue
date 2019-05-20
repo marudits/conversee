@@ -14,7 +14,10 @@
                                     )
                     el-col(:xs="24" :sm="8")
                         el-form-item
-                            el-input-number.amount(v-model="form.amount" placeholder="Type amount" :min="0")
+                            el-input.amount(
+                                v-bind:value="form.amount" placeholder="Type amount" :min="0"
+                                v-on:input="(e) => debounceAmount(e)"
+                                )
                     el-col(:xs="24" :sm="8")
                         el-select.selected-currencies(v-model="form.selected_currencies" multiple collapse-tags placeholder="Select Quote Currencies")
                             el-option(
@@ -28,7 +31,7 @@
                 el-col.currency-info(v-if="list.selected_currencies.length > 0" :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
                     CurrencyInfoCard(
                         :amount="form.amount" :base_currency="form.base_currency" 
-                        :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0"
+                        :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0" :rate_updated_at="info.rates_updated_at"
                         @dismiss="handleAction('remove-quote-currency', item.currency_code)"
                         )
                 el-col.currency-info.no-data(v-if="list.selected_currencies.length == 0")
@@ -53,9 +56,6 @@ export default {
         CurrencyInfoCard
     },
     computed: {
-        amount(){
-            return this.form.amount;
-        },
         baseCurrency(){
             return this.form.base_currency;
         },
@@ -68,23 +68,39 @@ export default {
             form: {
                 base_currency: CONSTANTS.CURRENCIES.DEFAULT_BASE,
                 amount: 0,
-                selected_currencies: []
+                selected_currencies: [],
+                debounce_amount: null,
+            },
+            info: {
+                rates_updated_at: null
             },
             list: {
                 currencies: CONSTANTS.CURRENCIES.LIST,
                 rates: {},
                 selected_currencies: [],
-            }
+            },
         }
     },
     mounted(){
     },
     methods: {
+        debounceAmount(val){
+            if(this.form.debounce_amount){
+                clearTimeout(this.form.debounce_amount);
+            }
+            let that = this;
+            let amount = val.replace(CONSTANTS.VALIDATION.AMOUNT.RULE, '');
+            this.form.amount = amount;
+            
+            this.form.debounce_amount = setTimeout(() => {
+                this.form.amount = parseFloat(amount);
+                that.updateRate();
+            }, 500)
+        },
         handleAction(type, param){
             switch(type){
                 case 'remove-quote-currency':
-                    let removedIndex = this.form.selected_currencies.indexOf(param);
-                    this.form.selected_currencies.splice(removedIndex, 1);
+                    this.form.selected_currencies.splice(this.form.selected_currencies.indexOf(param), 1);
                     break;
                 default:
                     break;
@@ -97,6 +113,7 @@ export default {
             getExchangeRates(this.form.base_currency, this.form.selected_currencies.join(','))
                 .then(res => {
                     this.list.rates = res.body.rates;
+                    this.info.rates_updated_at = new Date().toLocaleString();
                 })
                 .catch(err => {
                     this.showMessage('Failed on udpating rate info. ' + (err.error || ''), 'error');
@@ -104,18 +121,13 @@ export default {
         },
     },
     watch: {
-        amount(){
-            if(this.form.base_currency && this.form.selected_currencies.length > 0){
-                this.updateRate();
-            }
-        },
         baseCurrency(){
             this.updateRate();
         },
         selectedCurrencies(){
             this.list.selected_currencies = [];
             for(let item of this.form.selected_currencies){
-                this.list.selected_currencies.push({ currency_code: item, base_currency: this.form.base_currency, rate: 0 });
+                this.list.selected_currencies.push({ currency_code: item, base_currency: this.form.base_currency });
             }
             if(this.list.selected_currencies.length > 0){
                 this.updateRate();

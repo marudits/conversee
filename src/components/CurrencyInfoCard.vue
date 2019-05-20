@@ -25,11 +25,10 @@ import { cutoff, numberWithComma } from '../utils/numberFormatter';
 
 export default {
     name: 'CurrencyInfo',
-    props: ['amount', 'base_currency', 'currency_code', 'rate'],
+    props: ['amount', 'base_currency', 'currency_code', 'rate', 'rate_updated_at'],
     data: () => {
         return {
             currency_name: null,
-            rate_updated_at: null,
             total: 1
         }
     },
@@ -76,13 +75,12 @@ export default {
     watch: {
         amountAndRate(){
             if(this.rate){
-                this.rate_updated_at = new Date().toLocaleString();
                 this.updateTotal();
             }
         },
         currencyCode(){
             this.getDetails();
-        }
+        },
     }
 }
 </script>

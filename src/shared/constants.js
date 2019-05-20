@@ -19,5 +19,10 @@ export const CONSTANTS = {
             { code: 'MYR', name: 'Malaysian Ringgit' },
             { code: 'SGD', name: 'Singapore Dollar' }
         ]
+    },
+    VALIDATION: {
+        AMOUNT: {
+            RULE: /[^0-9\\.]+/g
+        }
     } 
 }
