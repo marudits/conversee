@@ -146,7 +146,7 @@ export default {
                     &.base-currency, &.selected-currencies
                         max-width 300px
                         width 100%
-                .el-input-number
+                .el-input
                     &.amount
                         max-width 300px
                         width 100%

@@ -1,8 +1,7 @@
 
 <template lang="pug">
   el-container#app
-    el-header
-      Header
+    Header
     el-main
       HomePage
     el-footer
@@ -28,10 +27,29 @@ export default {
 </script>
 
 <style lang="stylus">
-  #app
-    font-family 'Avenir', Helvetica, Arial, sans-serif
-    -webkit-font-smoothing antialiased
-    -moz-osx-font-smoothing grayscale
-    text-align center
-    color #2c3e50
+  @import './assets/styles/variable'
+
+  body
+    margin 0
+
+    #app
+      font-family 'Avenir', Helvetica, Arial, sans-serif
+      -webkit-font-smoothing antialiased
+      -moz-osx-font-smoothing grayscale
+      text-align center
+      color #2c3e50
+
+      .el-main
+        padding-bottom 5rem
+
+      .el-footer
+        background-color teal-darken-2
+        border-top 0.25rem solid teal-lighten-1
+        bottom 0
+        color teal-lighten-2
+        position fixed
+        width 100%
+
+        a
+          color teal-lighten-2
 </style>
