@@ -1,5 +1,5 @@
 <template lang="pug">
-    .currency-info
+    .currency-info(v-loading="loading")
         el-card.box-card(shadow="hover")
             .header.clearfix(slot="header")
                 span {{ currency_name }}
@@ -42,6 +42,7 @@ export default {
         return {
             currency_name: null,
             history: [],
+            loading: true,
             total: 1,
         }
     },
@@ -97,13 +98,16 @@ export default {
     watch: {
         amountAndRate(){
             if(this.rate){
+                this.loading = true;
                 this.updateTotal();
+                this.loading = false;
             }
         },
         currencyCode(){
             this.getDetails();
         },
         ratesHistory(){
+            this.loading = true;
             // re-structure data
             this.history = [];
             for(let index in this.rates_history){
@@ -126,7 +130,9 @@ export default {
                         percentage = (Math.abs(diff) / this.history[index - 1].rate) * 100;
                     this.history[index] = Object.assign({}, this.history[index], { percentage: parseFloat(percentage).toFixed(2), status });
                 }
-            }            
+            }
+            
+            this.loading = false;
         }
     }
 }
@@ -185,7 +191,7 @@ export default {
                     &.down
                         color red
                     &.equal
-                        color yellow
+                        color orange
 </style>
 
 
