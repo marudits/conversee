@@ -1,29 +1,46 @@
-# conversee
+# Conversee
 
-## Project setup
-```
-npm install
-```
+Conversee is an simple application which provide fast, reliable, and latest foreign exchange reference rates. Rates information are taken from [https://exchangeratesapi.io/](https://exchangeratesapi.io/). This application is built using Vue.js.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+### :sparkles: Coming Soon
+- Exchange rates information for crypto currency
 
-### Compiles and minifies for production
-```
-npm run build
-```
+### :checkered_flag: Installation
 
-### Run your tests
-```
-npm run test
+This app needs to be run on **Node.js** environment. Please make sure you have `node` and `npm` installed on your machine, or you can download and install by following instructions [here](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm). It is recommended to install or update to latest version.
+
+You can check `node` and `npm` on your machine using these commands
+
+```sh
+$ node -v
+$ npm -v
 ```
 
-### Lints and fixes files
-```
-npm run lint
+### :bulb: Getting started
+
+You can run this application by execute *bash* files on `./bin` folder
+
+Setup project (run linter tool and setup/install dependency)
+```sh
+$ ./bin/lint
+$ ./bin/setup
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Build project (optional)
+```sh
+$ ./bin/build
+```
+
+Run application
+```sh
+$ ./bin/(start|start_pm2|start_server)
+```
+
+Notes:
+- UI will have default url: [**http://localhost:8080**](http://localhost:8080)
+
+### :label: License
+No-Licensed
+
+### :robot: Developed by
+[**marudits**](mailto:marudits@gmail.com)
