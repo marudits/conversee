@@ -31,7 +31,8 @@
                 el-col.currency-info(v-if="list.selected_currencies.length > 0" :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
                     CurrencyInfoCard(
                         :amount="form.amount" :base_currency="form.base_currency" 
-                        :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0" :rate_updated_at="info.rates_updated_at"
+                        :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0" 
+                        :rates_history="list.rates_history[item.currency_code]" :rate_updated_at="info.rates_updated_at"
                         @dismiss="handleAction('remove-quote-currency', item.currency_code)"
                         )
                 el-col.currency-info.no-data(v-if="list.selected_currencies.length == 0")
@@ -45,7 +46,7 @@
 import CurrencyInfoCard from '../components/CurrencyInfoCard.vue';
 
 // services
-import { getExchangeRates } from '../services/exchangeRate';
+import { getExchangeRates, getExchangeRatesHistory } from '../services/exchangeRate';
 
 // shared
 import { CONSTANTS } from '../shared/constants';
@@ -77,6 +78,7 @@ export default {
             list: {
                 currencies: CONSTANTS.CURRENCIES.LIST,
                 rates: {},
+                rates_history: {},
                 selected_currencies: [],
             },
         }
@@ -97,6 +99,29 @@ export default {
                 that.updateRate();
             }, 500)
         },
+        getHistory(){
+            let end_at = new Date().toISOString().slice(0, 10),
+                start_at = new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 5)).toISOString().slice(0, 10);
+
+            getExchangeRatesHistory(start_at, end_at, this.form.base_currency, this.form.selected_currencies.join(','))
+                .then(res => {
+                    if(res.body && res.body.rates){
+                        this.list.rates_history = {};
+                        for(let date of Object.keys(res.body.rates)){
+                            for(let currency of Object.keys(res.body.rates[date])){
+                                if(!this.list.rates_history[currency]){
+                                    this.list.rates_history[currency] = {};
+                                }
+                                this.list.rates_history[currency][date] = res.body.rates[date][currency];
+                            }
+                        }
+                    }
+                })
+                .catch((err) => {
+                    // console.error('err: ', err);
+                    this.showMessage('Failed on get rates history info. ' + (err.error || ''), 'error');
+                })
+        },
         handleAction(type, param){
             switch(type){
                 case 'remove-quote-currency':
@@ -114,6 +139,8 @@ export default {
                 .then(res => {
                     this.list.rates = res.body.rates;
                     this.info.rates_updated_at = new Date().toLocaleString();
+
+                    this.getHistory();
                 })
                 .catch(err => {
                     this.showMessage('Failed on udpating rate info. ' + (err.error || ''), 'error');

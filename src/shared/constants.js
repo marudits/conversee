@@ -1,8 +1,10 @@
 export const CONSTANTS = {
     API: {
         EXCHANGE_RATES: {
+            HISTORY: `/history`,
+            QUOTE: `/latest`,
             ROOT: `https://api.exchangeratesapi.io`,
-            QUOTE: `/latest`
+            
         }
     },
     CURRENCIES: {
