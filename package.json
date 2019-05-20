@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "vue-cli-service serve",
+    "start": "npm run build && node server.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "core-js": "^2.6.5",
     "element-ui": "^2.8.2",
+    "express": "^4.17.0",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
     "stylus": "^0.54.5",
