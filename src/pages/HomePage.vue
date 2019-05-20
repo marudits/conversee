@@ -1,6 +1,8 @@
 <template lang="pug">
     .homepage
         .header
+            .info
+                p Get the fast, reliable, and latest foreign exchange reference rates.
             el-form.form-conversion(ref="form-conversion" :model="form")
                 el-row(:gutter="12")
                     el-col(:xs="24" :sm="8")
@@ -27,18 +29,27 @@
                                 :value="currency.code"
                                 )
         .content
-            el-row(:gutter="12")
-                el-col.currency-info(v-if="list.selected_currencies.length > 0" :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
+            el-row(:gutter="12" v-if="list.selected_currencies.length > 0")
+                el-col.currency-info( :xs="24" :sm="8" :m="6" v-for="(item, index) in list.selected_currencies" :key="index")
                     CurrencyInfoCard(
                         :amount="form.amount" :base_currency="form.base_currency" 
                         :currency_code="item.currency_code" :rate="list.rates[item.currency_code] || 0" 
                         :rates_history="list.rates_history[item.currency_code]" :rate_updated_at="info.rates_updated_at"
                         @dismiss="handleAction('remove-quote-currency', item.currency_code)"
                         )
-                el-col.currency-info.no-data(v-if="list.selected_currencies.length == 0")
-                    h4 
-                        i.el-icon-search 
-                        | &nbsp;No Quote Currencies Selected
+            el-row.currency-info.no-data(v-else)
+                h4 
+                    i.el-icon-search 
+                    | &nbsp;No Quote Currencies Selected
+        .footer
+            h4 Notes
+            ul
+                li Rates informations are taken from 
+                    a(href="https://exchangeratesapi.io/" target="_blank") https://exchangeratesapi.io/
+                li Please contact developer to request another currency
+                li 
+                    b Coming Soon! 
+                    | We will provide exchange rates for crypto currency!
 </template>
 
 <script>
@@ -177,6 +188,16 @@ export default {
                     &.amount
                         max-width 300px
                         width 100%
+        .footer
+            text-align left
+            h4
+                margin-bottom 0
+                text-decoration underline
+            ul
+                margin-top 0
+                padding-left 1.5rem
+                li
+                    font-size 0.9em
 </style>
 
 
